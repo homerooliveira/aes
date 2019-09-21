@@ -17,7 +17,7 @@ fun main(args: Array<String>) {
 
     when(args.first()) {
         "decrypt" -> {
-            val decrypt = AES.decrypt(password, text)
+            val decrypt = AES.decrypt(password, text, needApplyHash = true)
             nameWithoutExtension = nameWithoutExtension.removeSuffix("crypt")
             File("${nameWithoutExtension}decrypt.txt").writeText(decrypt)
             println(decrypt)
