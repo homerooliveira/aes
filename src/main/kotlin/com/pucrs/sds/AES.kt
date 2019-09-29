@@ -2,18 +2,21 @@ package com.pucrs.sds
 
 import com.pucrs.sds.AES.OperationMode.CRYPT
 import com.pucrs.sds.AES.OperationMode.DECRYPT
-import com.pucrs.sds.AES.Transformation.ECB
-import java.security.MessageDigest
 import java.security.SecureRandom
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
+/**
+ *
+ *
+ *
+ * @author Homero Oliveira
+ */
 object AES {
 
     enum class Transformation(val transformation: String) {
-        ECB("AES"),
         CBC("AES/CBC/PKCS5Padding"),
         CTR("AES/CTR/NoPadding")
     }
@@ -23,28 +26,23 @@ object AES {
         DECRYPT(Cipher.DECRYPT_MODE)
     }
 
-    fun crypt(key: String,
-              text: String,
-              transformation: Transformation = ECB,
-              needApplyHash: Boolean = true): String {
-        val secretKey = getSecretKey(key, needApplyHash)
-        val iv = getIvParameterSpec(CRYPT, text)
+    private const val IV_SIZE = 16
+
+    fun crypt(key: String, text: String, transformation: Transformation): String {
+        val secretKey = getSecretKey(key)
+        val iv = getIvForCrypt()
         val aes = getCipherInstance(transformation, CRYPT, secretKey, iv)
-        val encrypted = iv.iv + aes.doFinal(text.toByteArray())
+        val encrypted = iv.iv + aes.doFinal(text.toHexByteArray())
 
         return encrypted.toHexString()
     }
 
-    fun decrypt(
-        key: String,
-        text: String,
-        transformation: Transformation = ECB,
-        needApplyHash: Boolean = true): String {
-        val secretKey = getSecretKey(key, needApplyHash)
-        val iv = getIvParameterSpec(DECRYPT, text)
+    fun decrypt(key: String, cipher: String, transformation: Transformation): String {
+        val byteArray = cipher.toHexByteArray()
+        val secretKey = getSecretKey(key)
+        val iv = getIvForDecrypt(byteArray)
         val aes = getCipherInstance(transformation, DECRYPT, secretKey, iv)
-        val byteArray = text.toHexByteArray()
-        val decrypted = aes.doFinal(byteArray, 16, byteArray.count() - 16)
+        val decrypted = aes.doFinal(byteArray, IV_SIZE, byteArray.count() - IV_SIZE)
 
         return String(decrypted)
     }
@@ -52,44 +50,28 @@ object AES {
     private fun getCipherInstance(transformation: Transformation,
                                   mode: OperationMode,
                                   secretKey: SecretKey,
-                                  ivParameterSpec: IvParameterSpec? = null): Cipher {
+                                  ivParameterSpec: IvParameterSpec
+    ): Cipher {
         val cipher = Cipher.getInstance(transformation.transformation)
 
         return cipher.apply {
-            if (ivParameterSpec != null) {
-                init(mode.opmode, secretKey, ivParameterSpec)
-            } else {
-                init(mode.opmode, secretKey)
-            }
+            init(mode.opmode, secretKey, ivParameterSpec)
         }
     }
 
-    private fun getIvParameterSpec(mode: OperationMode, text: String): IvParameterSpec {
-        return when (mode) {
-            CRYPT -> {
-                val secureRandom = SecureRandom()
-                val bytes = ByteArray(16)
-                secureRandom.nextBytes(bytes)
-                IvParameterSpec(bytes)
-            }
-            DECRYPT -> {
-                val ivString = text.substring(0, 32) // Get Iv from text
-                IvParameterSpec(ivString.toHexByteArray())
-            }
-        }
+    private fun getIvForCrypt(): IvParameterSpec {
+        val secureRandom = SecureRandom()
+        val bytes = ByteArray(IV_SIZE)
+        secureRandom.nextBytes(bytes)
+        return IvParameterSpec(bytes)
     }
 
-    private fun getSecretKey(key: String, needApplyHash: Boolean = false): SecretKey {
-        val keyBytes = key.toByteArray()
+    private fun getIvForDecrypt(cipherByteArray: ByteArray): IvParameterSpec {
+        return IvParameterSpec(cipherByteArray.copyOf(IV_SIZE))
+    }
 
-        val bytes = if (needApplyHash) {
-            val messageDigest = MessageDigest.getInstance("SHA-256")
-            messageDigest.update(keyBytes)
-            messageDigest.digest().copyOfRange(0, 16)
-        } else {
-            key.toHexByteArray()
-        }
-
+    private fun getSecretKey(key: String): SecretKey {
+        val bytes = key.toHexByteArray()
         return SecretKeySpec(bytes, "AES")
     }
 }
