@@ -1,29 +1,32 @@
 package com.pucrs.sds
 
-import kotlin.system.exitProcess
+import kotlinx.cli.ArgParser
+import kotlinx.cli.ArgType
+import kotlinx.cli.required
+
+enum class Action {
+    Decrypt, Encrypt
+}
 
 fun main(args: Array<String>) {
-    if (args.count() < 4) {
-        System.err.println("Need provide 4 arguments.")
-        exitProcess(1)
-    }
+    val parser = ArgParser("aes")
 
-    val password = args[1]
-    val text = args[2]
-    val operation = when (args[4]) {
-        "CBC" -> AES.Transformation.CBC
-        else -> AES.Transformation.CTR
-    }
+    val action by parser.argument(ArgType.Choice<Action>())
+    val password by parser.option(ArgType.String, shortName = "p", description = "Password used to decrypt/encrypt.")
+        .required()
+    val text by parser.option(ArgType.String, shortName = "t", description = "Cipher text to decrypt and plain text to encrypt.").required()
+    val operation by parser.option(ArgType.Choice<AesMode>(), shortName = "o").required()
 
-    when(args.first()) {
-        "decrypt" -> {
-            val decrypt = AES.decrypt(password, text, operation)
+    parser.parse(args)
+
+    when(action) {
+        Action.Decrypt -> {
+            val decrypt = AesAlgorithm.decrypt(password, text, operation)
             println(decrypt)
         }
-        "crypt" -> {
-            val crypt = AES.crypt(password, text, operation)
+        Action.Encrypt -> {
+            val crypt = AesAlgorithm.encrypt(password, text, operation)
             println(crypt)
         }
-        else -> exitProcess(1)
     }
 }

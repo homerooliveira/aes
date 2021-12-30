@@ -1,5 +1,5 @@
 package com.pucrs.sds
 
-import javax.xml.bind.DatatypeConverter
+import org.apache.commons.codec.binary.Hex
 
-fun ByteArray.toHexString(): String = DatatypeConverter.printHexBinary(this)
+fun ByteArray.toHexString(): String = Hex.encodeHexString(this)
