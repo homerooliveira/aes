@@ -1,12 +1,9 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.3.50"
+    kotlin("jvm") version "1.6.10"
     application
 }
-
-group = "com.pucrs.sds"
-version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -14,19 +11,15 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.2")
+    implementation("commons-codec:commons-codec:1.15")
+    implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.4")
+    testImplementation(kotlin("test"))
 }
 
 application {
-    mainClassName = "$group.ApplicationKt"
+    mainClass.set("com.pucrs.sds.ApplicationKt")
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+tasks.withType<KotlinCompile>().configureEach {
+    kotlinOptions.allWarningsAsErrors = true
 }
