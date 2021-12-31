@@ -1,4 +1,4 @@
-package com.pucrs.sds
+package com.pucrs.sds.lib
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

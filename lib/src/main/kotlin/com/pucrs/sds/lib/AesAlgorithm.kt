@@ -1,7 +1,7 @@
-package com.pucrs.sds
+package com.pucrs.sds.lib
 
-import com.pucrs.sds.AesAlgorithm.OperationMode.ENCRYPT
-import com.pucrs.sds.AesAlgorithm.OperationMode.DECRYPT
+import com.pucrs.sds.lib.AesAlgorithm.OperationMode.ENCRYPT
+import com.pucrs.sds.lib.AesAlgorithm.OperationMode.DECRYPT
 import java.security.SecureRandom
 import javax.crypto.Cipher
 import javax.crypto.SecretKey

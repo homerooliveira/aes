@@ -1,7 +1,7 @@
-package com.pucrs.sds
+package com.pucrs.sds.lib
 
-import com.pucrs.sds.AesMode.CBC
-import com.pucrs.sds.AesMode.CTR
+import com.pucrs.sds.lib.AesMode.CBC
+import com.pucrs.sds.lib.AesMode.CTR
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

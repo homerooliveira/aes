@@ -1,4 +1,4 @@
-package com.pucrs.sds
+package com.pucrs.sds.lib
 
 enum class AesMode(val value: String) {
     CBC("AES/CBC/PKCS5Padding"),
