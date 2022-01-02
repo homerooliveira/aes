@@ -1,22 +1,38 @@
+import org.jetbrains.compose.compose
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     kotlin("jvm") version "1.6.10"
-    application
+    id("org.jetbrains.compose") version "1.0.1"
 }
 
+group = "me.homerooliveira"
+version = "1.0"
+
 repositories {
+    google()
     mavenCentral()
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
     implementation(project(":lib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.4")
+    implementation(compose.desktop.currentOs)
 }
 
-application {
-    mainClass.set("com.pucrs.sds.app.ApplicationKt")
+tasks.withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = "11"
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions.allWarningsAsErrors = true
+compose.desktop {
+    application {
+        mainClass = "MainKt"
+
+        nativeDistributions {
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            packageName = "app"
+            packageVersion = "1.0.0"
+        }
+    }
 }

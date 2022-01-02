@@ -1,4 +1,4 @@
-package com.pucrs.sds.app
+package com.pucrs.sds.cli
 
 import com.pucrs.sds.lib.AesAlgorithm
 import com.pucrs.sds.lib.AesMode

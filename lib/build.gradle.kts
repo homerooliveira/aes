@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
+    implementation(kotlin("stdlib"))
     implementation("commons-codec:commons-codec:1.15")
 
     testImplementation(kotlin("test"))
